@@ -32,6 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        System.out.println("configure auth");
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
@@ -42,7 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        System.out.println("configure http");
+        http.cors().and().csrf().disable()
                 .authorizeRequests().antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()

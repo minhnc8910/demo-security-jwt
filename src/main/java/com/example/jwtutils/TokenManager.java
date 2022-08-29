@@ -1,5 +1,7 @@
 package com.example.jwtutils;
 
+import com.example.model.Role;
+import com.example.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,19 +12,22 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class TokenManager implements Serializable {
     private static final long serialVersionUID = 7008375124389347049L;
-    public static final long TOKEN_VALIDITY = 1 * 60 * 60;
+    public static final long TOKEN_VALIDITY = 60000;
     @Value("${secret}")
     private String jwtSecret;
-    public String generateJwtToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername())
+    public String generateJwtToken(User user) {
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .setIssuer(user.getRole().getName())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 60)) // phut
                 .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
     public Boolean validateJwtToken(String token, UserDetails userDetails) {

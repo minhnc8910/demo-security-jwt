@@ -26,7 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        System.out.println("doFilterInternal-1");
         String tokenHeader = request.getHeader("Authorization");
         String username = null;
         String token = null;
@@ -43,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
             System.out.println("Bearer String not found in token");
         }
         if (null != username && SecurityContextHolder.getContext().getAuthentication() == null) {
+            System.out.println("doFilterInternal-2");
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (tokenManager.validateJwtToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -51,15 +52,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
-//        if (null != username && SecurityContextHolder.getContext().getAuthentication() == null) {
-//            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//            if (tokenManager.validateJwtToken(token, userDetails)) {
-//                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-//                        userDetails, null, userDetails.getAuthorities());
-//                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//            }
-//        }
         filterChain.doFilter(request, response);
     }
 }
